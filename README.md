@@ -9,7 +9,7 @@
 * 模式三：识图后自动点击优先级最高的词条
 
 ## 食用方法
-1. 下载本工具或AutoX.js
+1. [下载本工具](https://github.com/BGFFw/TKFMtool/releases/tag/v1.0.0)或AutoX.js
 2. 安装本工具到手机或在AutoX.js中导入本工具的js文件
 3. 打开天下布魔的全境征才界面
 4. 运行本工具或在AutoX.js中运行本工具的run.js文件
