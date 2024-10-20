@@ -108,7 +108,7 @@ window.action.setOnTouchListener(function(view, event){
                     if(i==4)engines.stopAll();
                     else if(i==3)
                     {
-                       alert("本程序由BGFF制作，如有任何问题请发送邮箱反馈\n邮箱：jinkentu19650215@163.com\nGithub：https://github.com/aaa505958131/TKFMtool")
+                       alert("本程序由BGFF制作，如有任何问题请发送邮箱反馈\n邮箱：jinkentu19650215@163.com\nGithub：https://github.com/BGFFw/TKFMtool")
                     }
                     else{
                         if(i!=-1&&i!=3)storage.put("mode",i);
