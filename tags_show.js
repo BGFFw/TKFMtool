@@ -1,18 +1,4 @@
-/*
-TKFMtool is a small tool used for the TKFM game.
-Copyright (C) 2024 BGFF
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+
 
 
 let tag_matchers=[];
@@ -74,7 +60,6 @@ function floaty_show(tag_matchers)
         <TableLayout
             layout_width="match_parent"
             layout_height="wrap_content"
-            padding="16dp"
             id="table"
             >
     
@@ -88,6 +73,12 @@ function floaty_show(tag_matchers)
                     text="选择"
                     textColor="#FFFFFF"
                     padding="8dp"
+                    gravity="center"
+                    />
+                <View
+                    layout_width="1dp"
+                    layout_height="match_parent"
+                    background="#FFFFFF"
                     />
                 <TextView
                     layout_width="0dp"
@@ -98,7 +89,11 @@ function floaty_show(tag_matchers)
                     padding="8dp" 
                     gravity="center"/>
             </TableRow>
-            
+            <View
+                layout_width="match_parent"
+                layout_height="1dp"
+                background="#FFFFFF"
+            />
 
         </TableLayout>
     </ScrollView>
@@ -123,6 +118,11 @@ function floaty_show(tag_matchers)
         padding="8dp"
         
         id="tags"/>
+    <View
+     layout_width="1dp"
+    layout_height="match_parent"
+    background="#FFFFFF"
+    />
     <TextView
         layout_width="0dp"
         layout_height="wrap_content"
@@ -130,31 +130,42 @@ function floaty_show(tag_matchers)
         padding="8dp"
         
         id="matchs" />
-    </TableRow>)
+    </TableRow>
+)
+
+    let View = ui.inflate(
+        <View
+        layout_width="match_parent"
+        layout_height="1dp"
+        background="#FFFFFF"
+        />
+    ,textView.tablerow)
     
         
-        var spannableString = new android.text.SpannableString(tag_matchers[i].matchs.join("\n")+"\n");
-        var regex = /2☆.*\n/g;
-        var match;
-        while((match = regex.exec(spannableString))!== null) {
-            spannableString.setSpan(new android.text.style.ForegroundColorSpan(android.graphics.Color.RED), match.index, match.index + match[0].length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        var regex = /3☆.*\n/g;
-        var match;
-        while((match = regex.exec(spannableString))!== null) {
-            spannableString.setSpan(new android.text.style.ForegroundColorSpan(android.graphics.Color.parseColor("#b8860b")), match.index, match.index + match[0].length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        
-        ui.run(function(){
-        textView.tags.setText(tag_matchers[i].tags.join("\n"))
-        textView.matchs.setText(spannableString)
-        floatyWindow.table.addView(textView);
-        })
+    var spannableString = new android.text.SpannableString(tag_matchers[i].matchs.join("\n")+"\n");
+    var regex = /2☆.*\n/g;
+    var match;
+    while((match = regex.exec(spannableString))!== null) {
+        spannableString.setSpan(new android.text.style.ForegroundColorSpan(android.graphics.Color.RED), match.index, match.index + match[0].length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+    var regex = /3☆.*\n/g;
+    var match;
+    while((match = regex.exec(spannableString))!== null) {
+        spannableString.setSpan(new android.text.style.ForegroundColorSpan(android.graphics.Color.parseColor("#b8860b")), match.index, match.index + match[0].length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+    
+    ui.run(function(){
+    textView.tags.setText(tag_matchers[i].tags.join("\n"))
+    textView.matchs.setText(spannableString)
+    floatyWindow.table.addView(textView);
+    floatyWindow.table.addView(View);
+
+    })
     textView.tablerow.setOnClickListener(function(view,event){
-        ui.run(function(){
-            events.broadcast.emit("chose",view.tags.text)
-        })
-        return true;
+    ui.run(function(){
+        events.broadcast.emit("chose",view.tags.text)
+    })
+    return true;
     })
     
     

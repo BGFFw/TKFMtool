@@ -1,20 +1,3 @@
-/*
-TKFMtool is a small tool used for the TKFM game.
-Copyright (C) 2024  BGFF
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
-
 let currentEngine = engines.myEngine()
 let runningEngines = engines.all()
 let currentSource = currentEngine.getSource() + ''
@@ -37,7 +20,7 @@ events.broadcast.emit("TKFMtoolRunSuccess");
 var runEngine = null;
 
 
-var dataset = [
+var dataset = [ 
   ["3☆魔王 巴尔", "领袖", "火属性", "魔族", "中体型", "攻击者", "爆发力", "输出"],
     ["3☆魔王 撒旦", "领袖", "闇属性", "魔族", "中体型", "守护者", "生存力", "回击","巨乳", "防御","保护"],
     ["3☆精灵王 赛露西亚", "领袖", "风属性", "亚人", "中体型", "巨乳", "辅助者", "爆发力", "支援"],
@@ -115,7 +98,9 @@ var dataset = [
     ["0☆惩戒天使", "水属性", "守护者", "士兵", "生存力", "中体型", "回击", "群体攻击", "美乳", "亚人"],
     ["0☆福音天使", "水属性", "治疗者", "士兵", "保护", "美乳", "中体型"],
     ["0☆木乃伊 穆穆", "闇属性", "生存力", "妨碍者", "中体型", "保护", "干扰", "美乳"],
-    ["0☆人马 赛希", "风属性", "巨乳", "中体型", "攻击者", "亚人", "爆发力", "输出"]
+    ["0☆人马 赛希", "风属性", "巨乳", "中体型", "攻击者", "亚人", "爆发力", "输出"],
+    ["0☆猎犬小队 茉莉", "水属性", "人类", "贫乳", "攻击者", "小体型","士兵"],
+    ["0☆猎犬小队 安雅", "风属性", "妨碍者","士兵","人类"]
   ]
 
 
@@ -133,6 +118,7 @@ let capturing = false
 let storage = storages.create("chosed")
 let turn_width = device.width/1080;
 let turn_height = device.height/2400;
+let keepTimethread = null;
 
 
 events.on("Engine", function(Engine){
@@ -152,22 +138,77 @@ events.on("Capturing", function(){
         }
         else if(storage.get("mode")==1)
         {
+          if(storage.get("SetTime")==0)
+          {
+            if(ifsureSR(tag_matchers[0].matchs))
+              {
+                
+                keepTimethread&&keepTimethread.interrupt();
+                keepTimethread = threads.start(function(){
+                  keepTime(storage.get("Have_SRtime"));
+                })
+              }
+              else
+              {
+                keepTimethread&&keepTimethread.interrupt();
+                keepTimethread = threads.start(function(){
+                  keepTime(storage.get("None_SRtime"));
+                })
+              }
+          }
           clickfrompositon(tagstoposition(tag_matchers[0].tags));
           events.broadcast.emit("tags_show");
         }
         else if(storage.get("mode")==2)
         {
+          if(storage.get("SetTime")==0)
+            {
+              if(ifsureSR(tag_matchers[0].matchs))
+                {
+                  
+                  keepTimethread&&keepTimethread.interrupt();
+                  keepTimethread = threads.start(function(){
+                    keepTime(storage.get("Have_SRtime"));
+                  })
+                }
+                else
+                {
+                  keepTimethread&&keepTimethread.interrupt();
+                  keepTimethread = threads.start(function(){
+                    keepTime(storage.get("None_SRtime"));
+                  })
+                }
+            }
           clickfrompositon(tagstoposition(tag_matchers[0].tags));
         }
       }
     }catch(error)
     {
       toast("Error");
+      log(error);
     }
     
 });
 events.broadcast.on("chose",function(text){
   tags = text.split("\n");
+  if(storage.get("SetTime")==0)
+  {
+    if(ifsureSR(tagstomatchs(tags)))
+    {
+      keepTimethread&&keepTimethread.interrupt();
+      keepTimethread = threads.start(function(){
+        keepTime(storage.get("Have_SRtime"));
+      })
+    }
+    else
+    {
+      keepTimethread&&keepTimethread.interrupt();
+      keepTimethread = threads.start(function(){
+        keepTime(storage.get("None_SRtime"));
+      })
+    }
+  }
+
   clickfrompositon(tagstoposition(tags));
 });
 
@@ -211,14 +252,13 @@ function captureAndOcr() {
   correctresult();
   capturing = false
   runEngine.emit("capturing_end");
+  img && img.recycle();
 }
 
 
 
 
 
-
-img && img.recycle();
 function correctresult()
 {
   for(let i=0;i<result.length;i++)
@@ -349,3 +389,58 @@ function clickfrompositon(position)
   } 
 }
 
+function keepTime(n)
+{
+  auto.waitFor()
+  while(updateTime()!=n)
+  {
+  press(229.6*turn_width,671.7*turn_height,50);
+  sleep(1000);
+  }
+  
+
+}
+
+function updateTime()
+{
+  let img = captureScreen();
+  img = images.clip(img,55*turn_width,436*turn_height,(396-55)*turn_width,(724-436)*turn_height);
+  let result = paddle.ocrText(img,useSlim=false);
+  if(result[0]=="60")result[0]="09";
+  img&&img.recycle();
+  log(result[0]);
+  return result[0];
+
+}
+
+function ifsureSR(match)
+{
+  for(let i=0;i<match.length;i++)
+  {
+    if(match[i][0].charAt(0)=="1"||match[i][0].charAt(0)=="0")
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+function tagstomatchs(tags)
+{
+  let matchs = []
+  for(let i=0;i<dataset.length;i++)
+  {
+    if(tags.every((element)=>{return dataset[i].includes(element);}))
+    {
+      if(dataset[i][0].charAt(0)!='3')matchs.push(dataset[i]);
+    if(dataset[i][0].charAt(0)=='3'&&tags.includes("领袖"))
+    {
+      matchs.push(dataset[i]);
+    }
+    }
+    
+    
+  }
+  return matchs;
+
+}
