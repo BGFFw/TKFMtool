@@ -9,6 +9,8 @@ exit()
 
 let path1 = "./TKFMtool.js";
 let path2 = "./tags_show.js";
+let path3 = "./UserCorrectWindow.js";
+
 
 let storage = storages.create("chosed");
 if(storage.get("mode")===undefined)
@@ -25,9 +27,44 @@ if(storage.get("Have_SRtime")===undefined)
 }
 if(storage.get("SetTime")===undefined)
 {
-    
     storage.put("SetTime",1)//1为关闭，0为开启
-
+}
+if(storage.get("CPU_Core")===undefined)
+{
+    storage.put("CPU_Core",3)
+}
+if(storage.get("Ocr_Mode")===undefined)
+{
+    storage.put("Ocr_Mode",0)
+}
+if(storage.get("UserCorrectSet")===undefined)
+{
+    storage.put("UserCorrectSet",[
+        {
+            title: "間属性",
+            summary: "闇属性",
+            color: "#f44336",
+            done: true
+        },
+        {
+            title: "周属性",
+            summary: "闇属性",
+            color: "#ff5722",
+            done: true
+        },
+        {
+            title: "防碍者",
+            summary: "妨碍者",
+            color: "#4caf50",
+            done: true
+        },
+        {
+            title: "留院",
+            summary: "削弱",
+            color: "#2196f3",
+            done: true
+        }
+    ]);
 }
 
 let capturing =false;
@@ -96,7 +133,7 @@ window.action.setOnTouchListener(function(view, event){
             //如果按下的时间超过0.5秒判断为长按
             if(!longPressed&&new Date().getTime() - downTime > 500&&Math.abs(event.getRawY() - y) < 100 && Math.abs(event.getRawX() - x) < 100){
                 longPressed = true;
-                dialogs.select("设置", ["选择运行模式","自动设置招募时间开关","招募时间设置","关于本程序","关闭程序"],function(i)
+                dialogs.select("设置", ["选择运行模式","自动设置招募时间开关","招募时间设置","识图所用CPU核心数目","识图模式","识图结果纠错","查看上次识图结果（纠正后）（需要通知权限）","关于本程序","关闭程序"],function(i)
                 {
                     
                     if(i==0)
@@ -197,9 +234,72 @@ window.action.setOnTouchListener(function(view, event){
                     }
                     else if(i==3)
                     {
+                        dialogs.singleChoice("选择识图所用CPU核心数目",["1","2","3","4","5","6","7","8"] ,storage.get("CPU_Core") ,function(i)
+                        {
+                            if(i==0)
+                            {
+                                storage.put("CPU_Core",0)
+                            }
+                            else if(i==1)
+                            {
+                                storage.put("CPU_Core",1)
+                            }
+                            else if(i==2)
+                            {
+                                storage.put("CPU_Core",2)
+                            }
+                            else if(i==3)
+                            {
+                                storage.put("CPU_Core",3)
+                            }
+                            else if(i==4)
+                            {
+                                storage.put("CPU_Core",4)
+                            }
+                            else if(i==5)
+                            {
+                                storage.put("CPU_Core",5)
+                            }
+                            else if(i==6)
+                            {
+                                storage.put("CPU_Core",6)
+                            }
+                            else if(i==7)
+                            {
+                                storage.put("CPU_Core",7)
+                            }
+                        }
+                        )
+                    }
+                    else if(i==4)
+                    {
+                        dialogs.singleChoice("选择识图所用模式",["精准模型","快速模型"] ,storage.get("Ocr_Mode") ,function(i)
+                        {
+                            if(i==0)
+                            {
+                                storage.put("Ocr_Mode",0)
+                            }
+                            else if(i==1)
+                            {
+                                storage.put("Ocr_Mode",1)
+                            }
+                        }
+                        )
+                    }
+                    else if(i==5)
+                    {
+                        engines.execScriptFile(path3);
+
+                    }
+                    else if(i==6)
+                    {
+                        toast("上一次的结果为："+storage.get("last_result"));
+                    }
+                    else if(i==7)
+                    {
                        alert("本程序由BGFF制作，如有任何问题请发送邮箱反馈\n邮箱：jinkentu19650215@163.com\nGithub：https://github.com/BGFFw/TKFMtool")
                     }
-                    else if(i==4)engines.stopAll();
+                    else if(i==8)engines.stopAll();
 
                 });
             }

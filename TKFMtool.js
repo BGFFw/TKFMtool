@@ -14,7 +14,7 @@ if (runningEngines.length > 1) {
 events.broadcast.emit("TKFMtoolRunSuccess");
 
 
-
+importClass(android.graphics.Paint);
 
 
 var runEngine = null;
@@ -214,6 +214,17 @@ events.broadcast.on("chose",function(text){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function captureAndOcr() {
   capturing = true;
   img && img.recycle()
@@ -223,8 +234,8 @@ function captureAndOcr() {
   }
   img = images.clip(img,42*turn_width,833*turn_height,(1033-42)*turn_width,(1137-833)*turn_height);
   //img.saveTo("/storage/emulated/0/Download/1.jpg");
-  _result = paddle.ocr(img,useSlim=false);
-  //log(_result)
+  _result = paddle.ocr(img,cpuThreadNum=storage.get("CPU_Core")+1,useSlim=storage.get("Ocr_Mode")==0?false:true);
+  log(_result)
   _result = _result.map((element)=>
   {
     let a = new Object();
@@ -250,6 +261,11 @@ function captureAndOcr() {
     return element.text;
   });
   correctresult();
+  if(storage.get("UserCorrectSet"))
+  {
+    userCorrect();
+  }
+  storage.put("last_result",result);
   capturing = false
   runEngine.emit("capturing_end");
   img && img.recycle();
@@ -397,7 +413,6 @@ function keepTime(n)
   press(229.6*turn_width,671.7*turn_height,50);
   sleep(1000);
   }
-  
 
 }
 
@@ -405,7 +420,7 @@ function updateTime()
 {
   let img = captureScreen();
   img = images.clip(img,55*turn_width,436*turn_height,(396-55)*turn_width,(724-436)*turn_height);
-  let result = paddle.ocrText(img,useSlim=false);
+  let result = paddle.ocrText(img,cpuThreadNum=storage.get("CPU_Core")+1,useSlim=storage.get("Ocr_Mode")==0?false:true);
   if(result[0]=="60")result[0]="09";
   img&&img.recycle();
   log(result[0]);
@@ -442,5 +457,25 @@ function tagstomatchs(tags)
     
   }
   return matchs;
+
+}
+
+function userCorrect()
+{
+  let correctlist = storage.get("UserCorrectSet");
+  for(let i=0;i<correctlist.length;i++)
+  {
+    if(!correctlist[i].done)
+    {
+      continue;
+    }
+    if(result.indexOf(correctlist[i].title) != -1)
+    {
+      result[result.indexOf(correctlist[i].title)] = correctlist[i].summary;
+    }
+  }
+
+
+
 
 }
