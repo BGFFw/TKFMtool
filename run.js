@@ -94,9 +94,6 @@ events.on("capturing_end", function(){
 setInterval(()=>{}, 1000);
 
 
-
-
-
 let TKFMtool = null;
 TKFMtool = engines.execScriptFile(path1);
 events.broadcast.on("TKFMtoolRunSuccess", function(){
@@ -299,7 +296,7 @@ window.action.setOnTouchListener(function(view, event){
                     {
                        alert("本程序由BGFF制作，如有任何问题请发送邮箱反馈\n邮箱：jinkentu19650215@163.com\nGithub：https://github.com/BGFFw/TKFMtool")
                     }
-                    else if(i==8)engines.stopAll();
+                    else if(i==8)java.lang.System.exit(0);
 
                 });
             }

@@ -142,11 +142,11 @@ events.on("Capturing", function(){
           {
             if(ifsureSR(tag_matchers[0].matchs))
               {
-                
                 keepTimethread&&keepTimethread.interrupt();
                 keepTimethread = threads.start(function(){
                   keepTime(storage.get("Have_SRtime"));
                 })
+                setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
               }
               else
               {
@@ -154,6 +154,7 @@ events.on("Capturing", function(){
                 keepTimethread = threads.start(function(){
                   keepTime(storage.get("None_SRtime"));
                 })
+                setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
               }
           }
           clickfrompositon(tagstoposition(tag_matchers[0].tags));
@@ -170,6 +171,7 @@ events.on("Capturing", function(){
                   keepTimethread = threads.start(function(){
                     keepTime(storage.get("Have_SRtime"));
                   })
+                  setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
                 }
                 else
                 {
@@ -177,6 +179,7 @@ events.on("Capturing", function(){
                   keepTimethread = threads.start(function(){
                     keepTime(storage.get("None_SRtime"));
                   })
+                  setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
                 }
             }
           clickfrompositon(tagstoposition(tag_matchers[0].tags));
@@ -199,6 +202,7 @@ events.broadcast.on("chose",function(text){
       keepTimethread = threads.start(function(){
         keepTime(storage.get("Have_SRtime"));
       })
+      setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
     }
     else
     {
@@ -206,6 +210,7 @@ events.broadcast.on("chose",function(text){
       keepTimethread = threads.start(function(){
         keepTime(storage.get("None_SRtime"));
       })
+      setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
     }
   }
 
@@ -408,7 +413,8 @@ function clickfrompositon(position)
 function keepTime(n)
 {
   auto.waitFor()
-  while(updateTime()!=n)
+  let temp;
+  while((temp=updateTime())!=n&&["01","02","03","04","05","06","07","08","09"].includes(temp))
   {
   press(229.6*turn_width,671.7*turn_height,50);
   sleep(1000);
