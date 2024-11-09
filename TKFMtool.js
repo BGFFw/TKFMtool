@@ -119,7 +119,7 @@ let storage = storages.create("chosed")
 let turn_width = device.width/1080;
 let turn_height = device.height/2400;
 let keepTimethread = null;
-
+let id = null;
 
 events.on("Engine", function(Engine){
   runEngine = Engine;//获得执行该脚本的脚本引擎对象；
@@ -143,18 +143,20 @@ events.on("Capturing", function(){
             if(ifsureSR(tag_matchers[0].matchs))
               {
                 keepTimethread&&keepTimethread.interrupt();
+                id&&clearInterval(id);
                 keepTimethread = threads.start(function(){
                   keepTime(storage.get("Have_SRtime"));
                 })
-                setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
+                id = setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
               }
               else
               {
                 keepTimethread&&keepTimethread.interrupt();
+                id&&clearInterval(id);
                 keepTimethread = threads.start(function(){
                   keepTime(storage.get("None_SRtime"));
                 })
-                setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
+                id = setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
               }
           }
           clickfrompositon(tagstoposition(tag_matchers[0].tags));
@@ -168,18 +170,20 @@ events.on("Capturing", function(){
                 {
                   
                   keepTimethread&&keepTimethread.interrupt();
+                  id&&clearInterval(id);
                   keepTimethread = threads.start(function(){
                     keepTime(storage.get("Have_SRtime"));
                   })
-                  setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
+                  id = setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
                 }
                 else
                 {
                   keepTimethread&&keepTimethread.interrupt();
+                  id&&clearInterval(id);
                   keepTimethread = threads.start(function(){
                     keepTime(storage.get("None_SRtime"));
                   })
-                  setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
+                  id = setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
                 }
             }
           clickfrompositon(tagstoposition(tag_matchers[0].tags));
@@ -199,18 +203,20 @@ events.broadcast.on("chose",function(text){
     if(ifsureSR(tagstomatchs(tags)))
     {
       keepTimethread&&keepTimethread.interrupt();
+      id&&clearInterval(id);
       keepTimethread = threads.start(function(){
         keepTime(storage.get("Have_SRtime"));
       })
-      setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
+      id = setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
     }
     else
     {
       keepTimethread&&keepTimethread.interrupt();
+      id&&clearInterval(id);
       keepTimethread = threads.start(function(){
         keepTime(storage.get("None_SRtime"));
       })
-      setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
+      id = setTimeout(function(){keepTimethread&&keepTimethread.interrupt();},10000);
     }
   }
 
@@ -414,9 +420,9 @@ function keepTime(n)
 {
   auto.waitFor()
   let temp;
-  while((temp=updateTime())!=n&&["01","02","03","04","05","06","07","08","09"].includes(temp))
+  while((temp=updateTime())!=n)
   {
-  press(229.6*turn_width,671.7*turn_height,50);
+    if(["01","02","03","04","05","06","07","08","09"].includes(temp))press(229.6*turn_width,671.7*turn_height,50);
   sleep(1000);
   }
 
